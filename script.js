@@ -1,11 +1,11 @@
 // Variables to control game state
-let gameRunning = false; // Keeps track of active or not
-let dropMaker; // Will store our timer that creates drops regularly
+let gameRunning = false;
+let dropMaker;
 let score = 0;
 let timeLeft = 30;
 let countdownTimer;
 
-// Arrays for winning and losing messages
+// Messages
 const winMessages = [
   "Amazing job! You brought clean water closer to reality! 💧",
   "Fantastic work! Every drop counts towards a better future! 🌟",
@@ -18,11 +18,10 @@ const loseMessages = [
   "So close! Try again to make an even bigger splash! 🌊"
 ];
 
-// Wait for button click to start the game
+// Event Listeners
 document.getElementById("start-btn").addEventListener("click", startGame);
 
 function startGame() {
-  // Prevent multiple games from running at once
   if (gameRunning) return;
 
   gameRunning = true;
@@ -30,15 +29,18 @@ function startGame() {
   timeLeft = 30;
   document.getElementById("score").textContent = score;
   document.getElementById("time").textContent = timeLeft;
-  document.getElementById("start-btn").style.display = "none"; // Hide start button during game
+  
+  // Update button to act as a Reset button during gameplay (LevelUp #2)
+  const startBtn = document.getElementById("start-btn");
+  startBtn.textContent = "Reset Game";
 
-  // Clear any existing drops in container
+  // Clear container
   document.getElementById("game-container").innerHTML = "";
 
-  // Create new drops every second (1000 milliseconds)
-  dropMaker = setInterval(createDrop, 1000);
+  // Drop creation loop
+  dropMaker = setInterval(createDrop, 800);
 
-  // Start the 30-second countdown timer
+  // Timer loop
   countdownTimer = setInterval(() => {
     timeLeft--;
     document.getElementById("time").textContent = timeLeft;
@@ -52,37 +54,44 @@ function startGame() {
 function createDrop() {
   if (!gameRunning) return;
 
-  // Create a new div element that will be our water drop
   const drop = document.createElement("div");
-  drop.className = "water-drop";
+  
+  // LevelUp #1: 25% chance to generate a "Dirty Water" bad drop
+  const isBadDrop = Math.random() < 0.25;
+  drop.className = isBadDrop ? "water-drop bad-drop" : "water-drop";
 
-  // Make drops different sizes for visual variety
+  // Size calculation
   const initialSize = 60;
   const sizeMultiplier = Math.random() * 0.8 + 0.5;
   const size = initialSize * sizeMultiplier;
   drop.style.width = drop.style.height = `${size}px`;
 
-  // Position the drop randomly across the game width
+  // Random horizontal position
   const gameContainer = document.getElementById("game-container");
   const gameWidth = gameContainer.offsetWidth;
   const xPosition = Math.random() * (gameWidth - 60);
   drop.style.left = xPosition + "px";
 
-  // Make drops fall for 4 seconds
   drop.style.animationDuration = "4s";
 
-  // Add click event to collect points
+  // Click interaction logic
   drop.addEventListener("mousedown", () => {
     if (!gameRunning) return;
-    score++;
+
+    if (isBadDrop) {
+      // Penalty: deduct 2 points for clicking dirty water
+      score = Math.max(0, score - 2); 
+    } else {
+      // Reward: add 1 point for clean water
+      score++; 
+    }
+
     document.getElementById("score").textContent = score;
-    drop.remove(); // Remove drop immediately when clicked
+    drop.remove();
   });
 
-  // Add the new drop to the game screen
   gameContainer.appendChild(drop);
 
-  // Remove drops that reach the bottom (weren't clicked)
   drop.addEventListener("animationend", () => {
     drop.remove();
   });
@@ -93,28 +102,44 @@ function endGame() {
   clearInterval(dropMaker);
   clearInterval(countdownTimer);
 
-  // Clear remaining drops
   document.getElementById("game-container").innerHTML = "";
-  document.getElementById("start-btn").style.display = "inline-block";
-  document.getElementById("start-btn").textContent = "Play Again";
+  
+  const startBtn = document.getElementById("start-btn");
+  startBtn.textContent = "Play Again";
 
-  // Pick a random message based on score
+  const isWin = score >= 20;
   let finalMessage = "";
-  if (score >= 20) {
+
+  if (isWin) {
     const randomIndex = Math.floor(Math.random() * winMessages.length);
     finalMessage = winMessages[randomIndex];
+    triggerConfetti(); // LevelUp #3: Celebrate Win with Confetti
   } else {
     const randomIndex = Math.floor(Math.random() * loseMessages.length);
     finalMessage = loseMessages[randomIndex];
   }
 
-  // Display the final score and message in the container
   const container = document.getElementById("game-container");
   container.innerHTML = `
     <div class="game-over-screen">
-      <h2>Game Over!</h2>
+      <h2>${isWin ? "🎉 Victory!" : "Game Over!"}</h2>
       <p>Your Final Score: <strong>${score}</strong></p>
       <p class="end-message">${finalMessage}</p>
     </div>
   `;
+}
+
+// LevelUp #3: Celebration Effect (Confetti Animation)
+function triggerConfetti() {
+  const container = document.getElementById("game-container");
+  for (let i = 0; i < 30; i++) {
+    const confetti = document.createElement("div");
+    confetti.className = "confetti";
+    confetti.style.left = Math.random() * 100 + "%";
+    confetti.style.backgroundColor = ["#FFC200", "#4facfe", "#2ed573", "#ff4757"][
+      Math.floor(Math.random() * 4)
+    ];
+    confetti.style.animationDelay = Math.random() * 2 + "s";
+    container.appendChild(confetti);
+  }
 }

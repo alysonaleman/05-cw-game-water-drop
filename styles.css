@@ -119,3 +119,30 @@ body {
     color: #0066cc;
     font-weight: 500;
 }
+
+/* LevelUp #1: Dirty Water Drops */
+.water-drop.bad-drop {
+    background: radial-gradient(circle at 30% 30%, #8b5a2b 0%, #4a2e16 100%);
+    border: 2px solid #331f0e;
+}
+
+/* LevelUp #3: Confetti Celebration Styling */
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    top: 0;
+    opacity: 0.8;
+    animation: confetti-fall 3s linear infinite;
+}
+
+@keyframes confetti-fall {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(400px) rotate(720deg);
+        opacity: 0;
+    }
+}
