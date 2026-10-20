@@ -65,18 +65,19 @@ body {
     background-color: #e5ae00;
 }
 
-/* Game Play Area Container */
+/* Game Play Area Container with Solid Yellow Border */
 #game-container {
     position: relative;
     width: 100%;
     height: 400px;
     background-color: #eef2f5;
-    border: 2px dashed #d1d8dd;
-    border-radius: 8px;
-    overflow: hidden;
+    border: 3px solid #FFC200; /* Distinct Charity: Water Yellow Container Border */
+    border-radius: 10px;
+    overflow: hidden; /* Encloses drops inside box */
+    box-sizing: border-box;
 }
 
-/* Water Drop Styling */
+/* Clean Water Drop Base Styling */
 .water-drop {
     position: absolute;
     top: -60px;
@@ -86,6 +87,12 @@ body {
     cursor: pointer;
     animation-name: fall;
     animation-timing-function: linear;
+}
+
+/* LevelUp #1: Dirty Water Drops */
+.water-drop.bad-drop {
+    background: radial-gradient(circle at 30% 30%, #8b5a2b 0%, #4a2e16 100%);
+    border: 2px solid #331f0e;
 }
 
 /* Falling Animation */
@@ -118,12 +125,6 @@ body {
     font-size: 1.1rem;
     color: #0066cc;
     font-weight: 500;
-}
-
-/* LevelUp #1: Dirty Water Drops */
-.water-drop.bad-drop {
-    background: radial-gradient(circle at 30% 30%, #8b5a2b 0%, #4a2e16 100%);
-    border: 2px solid #331f0e;
 }
 
 /* LevelUp #3: Confetti Celebration Styling */
